@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: Unit tests (${{ matrix.cc }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cc: gcc
+            cxx: g++
+          - cc: clang
+            cxx: clang++
+    steps:
+      - uses: actions/checkout@v6
+      - name: Configure
+        run: >
+          cmake -S test/host -B build-host
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_COMPILER=${{ matrix.cc }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+          -DSECURE_OTA_SANITIZE=ON
+      - name: Build
+        run: cmake --build build-host --parallel
+      - name: Test
+        run: ctest --test-dir build-host --output-on-failure
+      - name: Check the tools
+        run: |
+          python3 -m py_compile tools/serve_https.py
+          bash -n tools/make_test_certs.sh
+
+  firmware:
+    name: Firmware, ESP-IDF ${{ matrix.idf }} (${{ matrix.target }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        idf: [v5.5.6, v6.0.3]
+        target: [esp32, esp32s3]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Create a throwaway signing key
+        run: |
+          if [ "${{ matrix.target }}" = "esp32" ]; then
+            openssl ecparam -name prime256v1 -genkey -noout -out secure_boot_signing_key.pem
+          else
+            openssl genrsa -out secure_boot_signing_key.pem 3072
+          fi
+      - name: Build and sign
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: ${{ matrix.idf }}
+          target: ${{ matrix.target }}
