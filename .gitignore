@@ -1,0 +1,18 @@
+# ESP-IDF build output
+build/
+sdkconfig
+sdkconfig.old
+dependencies.lock
+managed_components/
+
+# Host unit tests
+build-host/
+
+# Signing keys and test certificates never belong in the repository
+secure_boot_signing_key.pem
+*.key
+test-certs/
+
+# Editors
+.vscode/
+.idea/
