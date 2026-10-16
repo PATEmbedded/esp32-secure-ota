@@ -1,0 +1,8 @@
+# Two OTA slots and no factory app (4 MB flash). Offsets are assigned by the
+# build, after the partition table at CONFIG_PARTITION_TABLE_OFFSET.
+# Name,   Type, SubType, Offset, Size
+nvs,      data, nvs,     ,       0x4000
+otadata,  data, ota,     ,       0x2000
+phy_init, data, phy,     ,       0x1000
+ota_0,    app,  ota_0,   ,       0x1E0000
+ota_1,    app,  ota_1,   ,       0x1E0000

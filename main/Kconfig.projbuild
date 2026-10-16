@@ -1,0 +1,47 @@
+menu "Secure OTA"
+
+    config SOTA_WIFI_SSID
+        string "Wi-Fi SSID"
+        default "myssid"
+
+    config SOTA_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default "mypassword"
+
+    config SOTA_FIRMWARE_URL
+        string "Firmware URL"
+        default "https://updates.example.com/secure_ota_demo.bin"
+        help
+            HTTPS URL of the signed application image. Plain HTTP is refused.
+
+    choice SOTA_SERVER_TRUST
+        prompt "Server certificate check"
+        default SOTA_TRUST_CERT_BUNDLE
+
+        config SOTA_TRUST_CERT_BUNDLE
+            bool "Public CAs from the ESP-IDF certificate bundle"
+            select MBEDTLS_CERTIFICATE_BUNDLE
+
+        config SOTA_TRUST_PINNED_CA
+            bool "Only the CA in main/certs/server_ca.pem"
+            help
+                The device accepts only server certificates issued by this CA.
+                The file in the repository is ISRG Root X1 (Let's Encrypt).
+    endchoice
+
+    config SOTA_CHECK_INTERVAL_S
+        int "Seconds between update checks"
+        range 60 86400
+        default 3600
+
+    config SOTA_HTTP_TIMEOUT_MS
+        int "Network timeout in milliseconds"
+        range 1000 60000
+        default 10000
+
+    config SOTA_WIFI_TIMEOUT_MS
+        int "Time a new image has to join Wi-Fi before it is rolled back (ms)"
+        range 5000 120000
+        default 30000
+
+endmenu

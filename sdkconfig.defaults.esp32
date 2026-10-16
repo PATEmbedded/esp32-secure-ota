@@ -1,0 +1,2 @@
+# The original ESP32 signs apps with ECDSA on the NIST P-256 curve.
+CONFIG_SECURE_SIGNED_APPS_ECDSA_SCHEME=y
