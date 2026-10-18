@@ -2,7 +2,7 @@
 
 ## 1.0.0 (2026-10-16)
 
-First release. It replaces the earlier `OTA` and `OTA_BT_Update` sketches.
+First release.
 
 - `secure_ota` component: HTTPS download into the inactive slot, project and semantic-version checks on the image header, optional eFuse anti-rollback, hash and signature verification before the slot switch
 - Boot confirmation with automatic rollback when the self-test fails
